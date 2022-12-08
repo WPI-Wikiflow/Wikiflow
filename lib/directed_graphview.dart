@@ -15,33 +15,36 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
-        body: Column(
-          children: [
-            Expanded(
-              child: InteractiveViewer(
-                  constrained: false,
-                  boundaryMargin: const EdgeInsets.all(8),
-                  minScale: 0.001,
-                  maxScale: 100,
-                  child: GraphView(
-                      graph: graph,
-                      algorithm: builder,
-                      paint: Paint()
-                        ..color = Colors.green
-                        ..strokeWidth = 1
-                        ..style = PaintingStyle.fill,
-                      builder: (Node node) {
-                        // I can decide what widget should be shown here based on the id
-                        var a = node.key!.value as int?;
-                        if (a == 2) {
-                          return rectangWidget(a);
-                        }
-                        return rectangWidget(a);
-                      })),
+      appBar: AppBar(),
+      body: Column(
+        children: [
+          Expanded(
+            child: InteractiveViewer(
+              constrained: false,
+              boundaryMargin: const EdgeInsets.all(8),
+              minScale: 0.001,
+              maxScale: 100,
+              child: GraphView(
+                graph: graph,
+                algorithm: builder,
+                paint: Paint()
+                  ..color = Colors.green
+                  ..strokeWidth = 1
+                  ..style = PaintingStyle.fill,
+                builder: (Node node) {
+                  // I can decide what widget should be shown here based on the id
+                  var a = node.key!.value as int?;
+                  if (a == 2) {
+                    return rectangWidget(a);
+                  }
+                  return rectangWidget(a);
+                },
+              ),
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 
   int n = 8;
@@ -49,23 +52,23 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
 
   Widget rectangWidget(int? i) {
     return InkWell(
-        onTap: () {
-          setState(() {
-            if (kDebugMode) {
-              print('tapped $i');
-            }
-          });
-        },
-        child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              boxShadow: const [
-                BoxShadow(color: Colors.blue, spreadRadius: 1),
-              ],
-            ),
-            child: Text('Node $i'),
+      onTap: () {
+        setState(() {
+          if (kDebugMode) {
+            print('tapped $i');
+          }
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4),
+          boxShadow: const [
+            BoxShadow(color: Colors.blue, spreadRadius: 1),
+          ],
         ),
+        child: Text('Node $i'),
+      ),
     );
   }
 
