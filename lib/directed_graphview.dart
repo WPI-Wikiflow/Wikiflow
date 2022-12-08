@@ -1,9 +1,12 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:graphview/GraphView.dart';
 
 class GraphClusterViewPage extends StatefulWidget {
+  const GraphClusterViewPage({super.key});
+
   @override
   _GraphClusterViewPageState createState() => _GraphClusterViewPageState();
 }
@@ -18,7 +21,7 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
             Expanded(
               child: InteractiveViewer(
                   constrained: false,
-                  boundaryMargin: EdgeInsets.all(8),
+                  boundaryMargin: const EdgeInsets.all(8),
                   minScale: 0.001,
                   maxScale: 100,
                   child: GraphView(
@@ -45,15 +48,25 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
   Random r = Random();
 
   Widget rectangWidget(int? i) {
-    return Container(
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
-          boxShadow: [
-            BoxShadow(color: Colors.blue, spreadRadius: 1),
-          ],
+    return InkWell(
+        onTap: () {
+          setState(() {
+            if (kDebugMode) {
+              print('tapped $i');
+            }
+          });
+        },
+        child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              boxShadow: const [
+                BoxShadow(color: Colors.blue, spreadRadius: 1),
+              ],
+            ),
+            child: Text('Node $i'),
         ),
-        child: Text('Node $i'));
+    );
   }
 
   final Graph graph = Graph();
@@ -61,6 +74,7 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
 
   @override
   void initState() {
+    super.initState();
     final a = Node.Id(1);
     final b = Node.Id(2);
     final c = Node.Id(3);
