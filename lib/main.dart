@@ -1,115 +1,264 @@
+import 'decision_tree_screen.dart';
+import 'layer_graphview.dart';
+import 'tree_graphview_json.dart';
 import 'package:flutter/material.dart';
+import 'package:graphview/GraphView.dart';
+
+import 'directed_graphview.dart';
+import 'graph_cluster_animated.dart';
+import 'layer_graphview_json.dart';
+import 'tree_graphview.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+    return MaterialApp(home: Home());
+  }
+}
+
+class Home extends StatelessWidget {
+  const Home({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        body: GraphClusterViewPage()
+
+        // Center(
+        //   child: Column(children: [
+        //     // SizedBox(
+        //     //   height: 20,
+        //     // ),
+        //     // MaterialButton(
+        //     //     color: Colors.redAccent,
+        //     //     shape: RoundedRectangleBorder(
+        //     //       borderRadius: BorderRadius.circular(30),
+        //     //     ),
+        //     //     onPressed: () => Navigator.push(
+        //     //           context,
+        //     //           MaterialPageRoute(
+        //     //             builder: (context) => TreeViewPage(),
+        //     //           ),
+        //     //         ),
+        //     //     child: Text(
+        //     //       'Tree View (BuchheimWalker)',
+        //     //       style: TextStyle(fontSize: 30),
+        //     //     )),
+        //     // SizedBox(
+        //     //   height: 20,
+        //     // ),
+        //     MaterialButton(
+        //         color: Colors.blueAccent,
+        //         shape: RoundedRectangleBorder(
+        //           borderRadius: BorderRadius.circular(30),
+        //         ),
+        //         onPressed: () => Navigator.push(
+        //               context,
+        //               MaterialPageRoute(
+        //                 builder: (context) => GraphClusterViewPage(),
+        //               ),
+        //             ),
+        //         child: Text(
+        //           'Graph Cluster View (FruchtermanReingold)',
+        //           style: TextStyle(fontSize: 30),
+        //         )),
+        //     SizedBox(
+        //       height: 20,
+        //     ),
+        //     // MaterialButton(
+        //     //     color: Colors.greenAccent,
+        //     //     shape: RoundedRectangleBorder(
+        //     //       borderRadius: BorderRadius.circular(30),
+        //     //     ),
+        //     //     onPressed: () => Navigator.push(
+        //     //           context,
+        //     //           MaterialPageRoute(
+        //     //             builder: (context) => LayeredGraphViewPage(),
+        //     //           ),
+        //     //         ),
+        //     //     child: Text(
+        //     //       "Layered View (Sugiyama)",
+        //     //       style: TextStyle(fontSize: 30),
+        //     //     )),
+        //     // SizedBox(
+        //     //   height: 20,
+        //     // ),
+        //     // MaterialButton(
+        //     //     color: Colors.redAccent,
+        //     //     shape: RoundedRectangleBorder(
+        //     //       borderRadius: BorderRadius.circular(30),
+        //     //     ),
+        //     //     onPressed: () => Navigator.push(
+        //     //           context,
+        //     //           MaterialPageRoute(
+        //     //             builder: (context) => TreeViewPageFromJson(),
+        //     //           ),
+        //     //         ),
+        //     //     child: Text(
+        //     //       'Tree View From Json(BuchheimWalker)',
+        //     //       style: TextStyle(fontSize: 30),
+        //     //     )),
+        //     // SizedBox(
+        //     //   height: 20,
+        //     // ),
+        //     // MaterialButton(
+        //     //     color: Colors.redAccent,
+        //     //     shape: RoundedRectangleBorder(
+        //     //       borderRadius: BorderRadius.circular(30),
+        //     //     ),
+        //     //     onPressed: () => Navigator.push(
+        //     //       context,
+        //     //       MaterialPageRoute(
+        //     //         builder: (context) => LayerGraphPageFromJson(),
+        //     //       ),
+        //     //     ),
+        //     //     child: Text(
+        //     //       'Layer Graph From Json ',
+        //     //       style: TextStyle(fontSize: 30),
+        //     //     )),
+        //     // SizedBox(
+        //     //   height: 20,
+        //     // ),
+        //     // MaterialButton(
+        //     //   onPressed: () {
+        //     //     var graph = new Graph();
+        //     //
+        //     //     Node node1 = Node.Id('One');
+        //     //     Node node2 = Node.Id('Two');
+        //     //     Node node3 = Node.Id('Three');
+        //     //     Node node4 = Node.Id('Four');
+        //     //     Node node5 = Node.Id('Five');
+        //     //     Node node6 = Node.Id('Six');
+        //     //     Node node7 = Node.Id('Seven');
+        //     //     Node node8 = Node.Id('Eight');
+        //     //     Node node9 = Node.Id('Nine');
+        //     //     graph.addEdge(node1, node2);
+        //     //     graph.addEdge(node1, node4);
+        //     //     graph.addEdge(node2, node3);
+        //     //     graph.addEdge(node2, node5);
+        //     //     graph.addEdge(node3, node6);
+        //     //     graph.addEdge(node4, node5);
+        //     //     graph.addEdge(node4, node7);
+        //     //     graph.addEdge(node5, node6);
+        //     //     graph.addEdge(node5, node8);
+        //     //     graph.addEdge(node6, node9);
+        //     //     graph.addEdge(node7, node8);
+        //     //     graph.addEdge(node8, node9);
+        //     //     var builder = FruchtermanReingoldAlgorithm();
+        //     //
+        //     //     Navigator.push(
+        //     //       context,
+        //     //       MaterialPageRoute(builder: (context) => GraphScreen(graph, builder, null)),
+        //     //     );
+        //     //   },
+        //     //   color: Colors.blueAccent,
+        //     //   shape: RoundedRectangleBorder(
+        //     //     borderRadius: BorderRadius.circular(30),
+        //     //   ),
+        //     //   child: Text(
+        //     //     'Square Grid (FruchtermanReingold)',
+        //     //     style: TextStyle(fontSize: 30),
+        //     //   ),
+        //     // ),
+        //     // SizedBox(
+        //     //   height: 20,
+        //     // ),
+        //     // MaterialButton(
+        //     //   onPressed: () {
+        //     //     var graph = new Graph();
+        //     //
+        //     //     Node node1 = Node.Id('One');
+        //     //     Node node2 = Node.Id('Two');
+        //     //     Node node3 = Node.Id('Three');
+        //     //     Node node4 = Node.Id('Four');
+        //     //     Node node5 = Node.Id('Five');
+        //     //     Node node6 = Node.Id('Six');
+        //     //     Node node7 = Node.Id('Seven');
+        //     //     Node node8 = Node.Id('Eight');
+        //     //     Node node9 = Node.Id('Nine');
+        //     //     Node node10 = Node.Id('Ten');
+        //     //
+        //     //     graph.addEdge(node1, node2);
+        //     //     graph.addEdge(node1, node3);
+        //     //     graph.addEdge(node2, node4);
+        //     //     graph.addEdge(node2, node5);
+        //     //     graph.addEdge(node2, node3);
+        //     //     graph.addEdge(node3, node5);
+        //     //     graph.addEdge(node3, node6);
+        //     //     graph.addEdge(node4, node7);
+        //     //     graph.addEdge(node4, node8);
+        //     //     graph.addEdge(node4, node5);
+        //     //     graph.addEdge(node5, node8);
+        //     //     graph.addEdge(node5, node9);
+        //     //     graph.addEdge(node5, node6);
+        //     //     graph.addEdge(node9, node6);
+        //     //     graph.addEdge(node10, node6);
+        //     //     graph.addEdge(node7, node8);
+        //     //     graph.addEdge(node8, node9);
+        //     //     graph.addEdge(node9, node10);
+        //     //
+        //     //     var builder = FruchtermanReingoldAlgorithm();
+        //     //
+        //     //     Navigator.push(
+        //     //       context,
+        //     //       MaterialPageRoute(builder: (context) => GraphScreen(graph, builder, null)),
+        //     //     );
+        //     //   },
+        //     //   color: Colors.blueAccent,
+        //     //   shape: RoundedRectangleBorder(
+        //     //     borderRadius: BorderRadius.circular(30),
+        //     //   ),
+        //     //   child: Text(
+        //     //     'Triangle Grid (FruchtermanReingold)',
+        //     //     style: TextStyle(fontSize: 30),
+        //     //   ),
+        //     // ),
+        //     // SizedBox(
+        //     //   height: 20,
+        //     // ),
+        //     // MaterialButton(
+        //     //   onPressed: () {
+        //     //     Navigator.push(
+        //     //       context,
+        //     //       MaterialPageRoute(builder: (context) => DecisionTreeScreen()),
+        //     //     );
+        //     //   },
+        //     //   color: Colors.greenAccent,
+        //     //   shape: RoundedRectangleBorder(
+        //     //     borderRadius: BorderRadius.circular(30),
+        //     //   ),
+        //     //   child: Text(
+        //     //     'Decision Tree (Sugiyama)',
+        //     //     style: TextStyle(fontSize: 30),
+        //     //   ),
+        //     // ),
+        //   ]),
+        // ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
-}
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+  Widget createNode(String nodeText) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.red,
+        border: Border.all(color: Colors.white, width: 1),
+        borderRadius: BorderRadius.circular(30),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+      child: Center(
+        child: Text(
+          nodeText,
+          style: TextStyle(fontSize: 10),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
