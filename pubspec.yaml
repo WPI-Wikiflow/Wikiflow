@@ -38,6 +38,7 @@ dependencies:
   scidart: ^0.0.2-dev.12
   graphview: ^1.1.1
   directed_graph: ^0.3.7
+  fuzzywuzzy: ^0.2.0
 
 dev_dependencies:
   flutter_test:

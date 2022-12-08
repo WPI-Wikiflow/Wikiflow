@@ -1,21 +1,22 @@
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
+import 'package:fuzzywuzzy/fuzzywuzzy.dart';
+import 'package:fuzzywuzzy/model/extracted_result.dart';
 
 class WikiHelper {
-
-
-  WikiHelper(String CSVPath) {
-    String wikiDataCSVPath = CSVPath;
-    List<List<dynamic>> wikiData = csvToList(wikiDataCSVPath);
-
-  }
 
   // The CSV is in the from of:
   // 0: vector 1 - 300 separated by spaces
   // 1: Title
   // 2: id
   // 3: Text of the document
+
+  WikiHelper(String CSVPath) {
+    String wikiDataCSVPath = CSVPath;
+    List<List<dynamic>> wikiData = csvToList(wikiDataCSVPath);
+
+  }
 
   List<List<dynamic>> csvToList(String path) {
     List<List<dynamic>> csvData = [];
@@ -65,7 +66,7 @@ class WikiHelper {
     return texts;
   }
 
-  double getCosinSimilarity(List<double> a, List<double> b) {
+  double getCosineSimilarity(List<double> a, List<double> b) {
     double dotProduct = 0.0;
     double normA = 0.0;
     double normB = 0.0;
@@ -80,7 +81,7 @@ class WikiHelper {
   List<int> getIndexOfNMostSimilar(List<double> vector, List<List<double>> vectors, int n) {
     List<double> similarities = [];
     for (List<double> v in vectors) {
-      similarities.add(getCosinSimilarity(vector, v));
+      similarities.add(getCosineSimilarity(vector, v));
     }
     List<int> indexes = [];
     for (int i = 0; i < n; i++) {
@@ -88,5 +89,10 @@ class WikiHelper {
       similarities[indexes[i]] = -1;
     }
     return indexes;
+  }
+
+  int indexOfFuzzyMatch(String query, List<String> titles) {
+    ExtractedResult<String> bestMatch = extractOne(query: query, choices: titles, cutoff: 5);
+    return titles.indexOf(bestMatch.choice);
   }
 }
