@@ -56,6 +56,7 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
         setState(() {
           if (kDebugMode) {
             print('tapped $i');
+            print("most similar: ${wikiHelper.getIndexOfNMostSimilar(wikiHelper.vectors[0], 3)}");
           }
         });
       },

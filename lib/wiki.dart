@@ -12,21 +12,33 @@ class WikiHelper {
   // 1: Title
   // 2: id
   // 3: Text of the document
+  List<List<double>> vectors = [];
+  List<String> titles = [];
+  List<String> texts = [];
+  List<String> ids = [];
 
   WikiHelper(String CSVPath) {
     String wikiDataCSVPath = CSVPath;
     Future<List<List>> wikiData = csvToList(wikiDataCSVPath);
     // Print the first 5 rows of the CSV
     wikiData.then((value) {
+      vectors = getVectors(value);
+      titles = getTitles(value);
+      texts = getTexts(value);
+      ids = getIds(value);
       if (kDebugMode) {
-        print(value.sublist(0, 5));
+        print(vectors.sublist(0, 5));
+        print(titles.sublist(0, 5));
+        print(texts.sublist(0, 5));
+        print(ids.sublist(0, 5));
       }
     });
+
   }
 
   Future<List<List>> csvToList(String path) async {
     List<List<dynamic>> csvData = [];
-    // Get test.csv from assets whlie being copatible with web
+    // Get test.csv from assets while being compatible with web
     String csvString = await rootBundle.loadString(path);
     List<String> csvRows = csvString.split('\n');
     for (String row in csvRows) {
@@ -81,18 +93,32 @@ class WikiHelper {
       normA += a[i] * a[i];
       normB += b[i] * b[i];
     }
+    normA = sqrt(normA);
+    normB = sqrt(normB);
     return dotProduct / (normA * normB);
   }
 
-  List<int> getIndexOfNMostSimilar(List<double> vector, List<List<double>> vectors, int n) {
+  List<int> getIndexOfNMostSimilar(List<double> vector, int n) {
     List<double> similarities = [];
-    for (List<double> v in vectors) {
+    if (kDebugMode) {
+      print(vectors);
+
+    }for (List<double> v in vectors) {
+      if (kDebugMode) {
+        print(v);
+      }
       similarities.add(getCosineSimilarity(vector, v));
+    }
+    if (kDebugMode) {
+      print(similarities);
     }
     List<int> indexes = [];
     for (int i = 0; i < n; i++) {
-      indexes.add(similarities.indexOf(similarities.reduce(max)));
-      similarities[indexes[i]] = -1;
+      int index = similarities.indexOf(similarities.reduce(max));
+      if (index != -1) {
+        indexes.add(index);
+        similarities[index] = -1;
+      }
     }
     return indexes;
   }
