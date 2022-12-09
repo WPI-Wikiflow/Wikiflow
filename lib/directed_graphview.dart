@@ -19,28 +19,26 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
       body: Column(
         children: [
           Expanded(
-            child: InteractiveViewer(
+            child: builder != null ?
+    InteractiveViewer(
               constrained: false,
               boundaryMargin: const EdgeInsets.all(8),
               minScale: 0.001,
               maxScale: 100,
               child: GraphView(
                 graph: graph,
-                algorithm: builder,
+                algorithm: builder!,
                 paint: Paint()
                   ..color = Colors.green
                   ..strokeWidth = 1
                   ..style = PaintingStyle.fill,
                 builder: (Node node) {
                   // I can decide what widget should be shown here based on the id
-                  var a = node.key!.value as int?;
-                  if (a == 2) {
-                    return rectangWidget(a);
-                  }
+                  var a = node.key!.value;
                   return rectangWidget(a);
                 },
               ),
-            ),
+            ) : const Center(child: CircularProgressIndicator()),
           ),
         ],
       ),
@@ -49,8 +47,8 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
 
   int n = 8;
   Random r = Random();
-  WikiHelper wikiHelper = WikiHelper("test.csv");
-  Widget rectangWidget(int? i) {
+
+  Widget rectangWidget(String? i) {
     return InkWell(
       onTap: () {
         setState(() {
@@ -73,30 +71,45 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
     );
   }
 
+  WikiHelper wikiHelper = WikiHelper("test.csv");
   final Graph graph = Graph();
-  late Algorithm builder;
+  Algorithm? builder;
 
   @override
   void initState() {
     super.initState();
-    final a = Node.Id(1);
-    final b = Node.Id(2);
-    final c = Node.Id(3);
-    final d = Node.Id(4);
-    final e = Node.Id(5);
-    final f = Node.Id(6);
-    final g = Node.Id(7);
-    final h = Node.Id(8);
 
-    graph.addEdge(a, b, paint: Paint()..color = Colors.red);
-    graph.addEdge(a, c);
-    graph.addEdge(a, d);
-    graph.addEdge(c, e);
-    graph.addEdge(d, f);
-    graph.addEdge(f, c);
-    graph.addEdge(g, c);
-    graph.addEdge(h, g);
+    // Get random title from wikiHelper
 
-    builder = FruchtermanReingoldAlgorithm(iterations: 1000);
+    // Wait for wikiHelper to finish loading
+    wikiHelper.loadWikiData().then((value) {
+      if (kDebugMode) {
+        print(wikiHelper.titles.length);
+      }
+      String randomTitle = wikiHelper.titles[r.nextInt(wikiHelper.titles.length)];
+
+      final List<Node> nodes = [];
+      final List<Edge> edges = [];
+
+      // Get the index of the random title
+      var randomTitleIndex = wikiHelper.titles.indexOf(randomTitle);
+
+      nodes.add(Node.Id(randomTitle));
+
+      // Get the 3 most similar titles to the random title
+      var mostSimilar = wikiHelper.getIndexOfNMostSimilar(wikiHelper.vectors[randomTitleIndex], 3);
+
+      // Add the most similar titles to the graph
+      for (var i in mostSimilar) {
+        nodes.add(Node.Id(wikiHelper.titles[i]));
+        // edges.add(Edge(nodes[0], nodes[nodes.length - 1]));
+        graph.addEdge(nodes[0], nodes[nodes.length - 1]);
+      }
+      // Set builder
+      builder = FruchtermanReingoldAlgorithm(iterations: 1000);
+      // Update state
+      setState(() {
+      });
+    });
   }
 }

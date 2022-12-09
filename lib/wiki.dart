@@ -16,26 +16,29 @@ class WikiHelper {
   List<String> titles = [];
   List<String> texts = [];
   List<String> ids = [];
+  String wikiDataCSVPath = "";
+  List<List> wikiData = [];
 
   WikiHelper(String CSVPath) {
-    String wikiDataCSVPath = CSVPath;
-    Future<List<List>> wikiData = csvToList(wikiDataCSVPath);
-    // Print the first 5 rows of the CSV
-    wikiData.then((value) {
-      vectors = getVectors(value);
-      titles = getTitles(value);
-      texts = getTexts(value);
-      ids = getIds(value);
-      if (kDebugMode) {
-        print(vectors.sublist(0, 5));
-        print(titles.sublist(0, 5));
-        print(texts.sublist(0, 5));
-        print(ids.sublist(0, 5));
-      }
-    });
-
+    wikiDataCSVPath = CSVPath;
   }
 
+  Future loadWikiData() async {
+    wikiData = await csvToList(wikiDataCSVPath);
+    // Print the first 5 rows of the CSV
+    // wikiData.then((value) {
+    vectors = getVectors(wikiData);
+    titles = getTitles(wikiData);
+    texts = getTexts(wikiData);
+    ids = getIds(wikiData);
+    if (kDebugMode) {
+      print(vectors.sublist(0, 5));
+      print(titles.sublist(0, 5));
+      print(texts.sublist(0, 5));
+      print(ids.sublist(0, 5));
+    }
+    // });
+  }
   Future<List<List>> csvToList(String path) async {
     List<List<dynamic>> csvData = [];
     // Get test.csv from assets while being compatible with web
@@ -102,8 +105,8 @@ class WikiHelper {
     List<double> similarities = [];
     if (kDebugMode) {
       print(vectors);
-
-    }for (List<double> v in vectors) {
+    }
+    for (List<double> v in vectors) {
       if (kDebugMode) {
         print(v);
       }
@@ -116,8 +119,13 @@ class WikiHelper {
     for (int i = 0; i < n; i++) {
       int index = similarities.indexOf(similarities.reduce(max));
       if (index != -1) {
-        indexes.add(index);
-        similarities[index] = -1;
+        if (vector == vectors[index]) {
+          similarities[index] = -1;
+          i--;
+        } else {
+          indexes.add(index);
+          similarities[index] = -1;
+        }
       }
     }
     return indexes;
