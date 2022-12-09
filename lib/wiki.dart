@@ -1,8 +1,9 @@
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import 'package:fuzzywuzzy/model/extracted_result.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class WikiHelper {
 
@@ -14,14 +15,19 @@ class WikiHelper {
 
   WikiHelper(String CSVPath) {
     String wikiDataCSVPath = CSVPath;
-    List<List<dynamic>> wikiData = csvToList(wikiDataCSVPath);
-
+    Future<List<List>> wikiData = csvToList(wikiDataCSVPath);
+    // Print the first 5 rows of the CSV
+    wikiData.then((value) {
+      if (kDebugMode) {
+        print(value.sublist(0, 5));
+      }
+    });
   }
 
-  List<List<dynamic>> csvToList(String path) {
+  Future<List<List>> csvToList(String path) async {
     List<List<dynamic>> csvData = [];
-    File file = File(path);
-    String csvString = file.readAsStringSync();
+    // Get test.csv from assets whlie being copatible with web
+    String csvString = await rootBundle.loadString(path);
     List<String> csvRows = csvString.split('\n');
     for (String row in csvRows) {
       List<dynamic> rowData = row.split(',');
@@ -30,12 +36,12 @@ class WikiHelper {
     return csvData;
   }
 
-  List<List<Double>> getVectors(List<List<dynamic>> wikiData) {
-    List<List<Double>> vectors = [];
+  List<List<double>> getVectors(List<List<dynamic>> wikiData) {
+    List<List<double>> vectors = [];
     for (List<dynamic> row in wikiData) {
-      List<Double> vector = [];
+      List<double> vector = [];
       for (String value in row[0].split(' ')) {
-        vector.add(double.parse(value) as Double);
+        vector.add(double.parse(value));
       }
       vectors.add(vector);
     }

@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:graphview/GraphView.dart';
-
+import 'wiki.dart';
 class GraphClusterViewPage extends StatefulWidget {
   const GraphClusterViewPage({super.key});
 
@@ -49,7 +49,7 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
 
   int n = 8;
   Random r = Random();
-
+  WikiHelper wikiHelper = WikiHelper("test.csv");
   Widget rectangWidget(int? i) {
     return InkWell(
       onTap: () {
