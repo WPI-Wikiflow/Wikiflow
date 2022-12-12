@@ -1,12 +1,19 @@
-import 'dart:io';
 import 'dart:math';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import 'package:fuzzywuzzy/model/extracted_result.dart';
-import 'package:flutter/services.dart' show rootBundle;
+
+
+class WikiNode {
+  List<double> vector = [];
+  String title = "";
+  String text = "";
+  String id = "";
+}
 
 class WikiHelper {
-
   // The CSV is in the from of:
   // 0: vector 1 - 300 separated by spaces
   // 1: Title
@@ -16,8 +23,11 @@ class WikiHelper {
   List<String> titles = [];
   List<String> texts = [];
   List<String> ids = [];
+  // Dictionary of titles to wikiNodes
+  Map<String, WikiNode> wikiNodes = {};
   String wikiDataCSVPath = "";
   List<List> wikiData = [];
+
 
   WikiHelper(String CSVPath) {
     wikiDataCSVPath = CSVPath;
@@ -31,14 +41,15 @@ class WikiHelper {
     titles = getTitles(wikiData);
     texts = getTexts(wikiData);
     ids = getIds(wikiData);
+    wikiNodes = getWikiNodes(vectors, titles, texts, ids);
     if (kDebugMode) {
       print(vectors.sublist(0, 5));
       print(titles.sublist(0, 5));
       print(texts.sublist(0, 5));
       print(ids.sublist(0, 5));
     }
-    // });
   }
+
   Future<List<List>> csvToList(String path) async {
     List<List<dynamic>> csvData = [];
     // Get test.csv from assets while being compatible with web
@@ -87,6 +98,25 @@ class WikiHelper {
     return texts;
   }
 
+  WikiNode getRandomNode() {
+    Random r = Random();
+    int randomIndex = r.nextInt(wikiData.length);
+    return wikiNodes[titles[randomIndex]] ?? WikiNode();
+  }
+
+  Map<String, WikiNode> getWikiNodes(List<List<double>> vectors, List<String> titles, List<String> texts,List<String> ids) {
+    Map<String, WikiNode> wikiNodes = {};
+    for (int i = 0; i < vectors.length; i++) {
+      WikiNode wikiNode = WikiNode();
+      wikiNode.vector = vectors[i];
+      wikiNode.title = titles[i];
+      wikiNode.text = texts[i];
+      wikiNode.id = ids[i];
+      wikiNodes[wikiNode.title] = wikiNode;
+    }
+    return wikiNodes;
+  }
+
   double getCosineSimilarity(List<double> a, List<double> b) {
     double dotProduct = 0.0;
     double normA = 0.0;
@@ -101,7 +131,7 @@ class WikiHelper {
     return dotProduct / (normA * normB);
   }
 
-  List<int> getIndexOfNMostSimilar(List<double> vector, int n) {
+  List<String> getIndexOfNMostSimilar(List<double> vector, int n) {
     List<double> similarities = [];
     if (kDebugMode) {
       print(vectors);
@@ -115,7 +145,7 @@ class WikiHelper {
     if (kDebugMode) {
       print(similarities);
     }
-    List<int> indexes = [];
+    List<String> titlesOut = [];
     for (int i = 0; i < n; i++) {
       int index = similarities.indexOf(similarities.reduce(max));
       if (index != -1) {
@@ -123,16 +153,17 @@ class WikiHelper {
           similarities[index] = -1;
           i--;
         } else {
-          indexes.add(index);
+          titlesOut.add(titles[index]);
           similarities[index] = -1;
         }
       }
     }
-    return indexes;
+    return titlesOut;
   }
 
   int indexOfFuzzyMatch(String query, List<String> titles) {
-    ExtractedResult<String> bestMatch = extractOne(query: query, choices: titles, cutoff: 5);
+    ExtractedResult<String> bestMatch =
+        extractOne(query: query, choices: titles, cutoff: 5);
     return titles.indexOf(bestMatch.choice);
   }
 }

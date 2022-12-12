@@ -39,6 +39,7 @@ dependencies:
   graphview: ^1.1.1
   directed_graph: ^0.3.7
   fuzzywuzzy: ^0.2.0
+  dropdown_search: ^5.0.5
 
 dev_dependencies:
   flutter_test:
