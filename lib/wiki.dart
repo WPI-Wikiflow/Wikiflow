@@ -161,9 +161,9 @@ class WikiHelper {
     return titlesOut;
   }
 
-  int indexOfFuzzyMatch(String query, List<String> titles) {
+  String indexOfFuzzyMatch(String query) {
     ExtractedResult<String> bestMatch =
         extractOne(query: query, choices: titles, cutoff: 5);
-    return titles.indexOf(bestMatch.choice);
+    return bestMatch.choice;
   }
 }

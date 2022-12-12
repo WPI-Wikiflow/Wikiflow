@@ -21,7 +21,34 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
       appBar: AppBar(),
       body: Column(
         children: [
-          // Add search bar
+          // Add search bar in normal text field
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: InputDecoration(
+                labelText: _articleSearch,
+                hintText: "Search for an article",
+                prefixIcon: const Icon(Icons.search),
+                border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(25.0)),
+                ),
+              ), // Get the text as soon as the user types
+              onChanged: (text) {
+                setState(() {
+                  // Update the text
+                  if (text != "") {
+                    _articleSearch = wikiHelper.indexOfFuzzyMatch(text);
+                  }
+                  else {
+                    _articleSearch = "";
+                  }
+                });
+                if (kDebugMode) {
+                  print(_articleSearch);
+                }
+              },
+            ),
+          ),
           Expanded(
             child: builder != null
                 ? InteractiveViewer(
@@ -64,7 +91,6 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
             ),
             child: Text("Article:\n ${_selectedArticle.text}"),
           ),
-
         ],
       ),
     );
@@ -79,7 +105,7 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
       onTap: () {
         setState(() {
           if (kDebugMode) {
-            print('tapped ${i!.title}');
+            print('tapped ${i.title}');
             print('tapped ${i.text}');
             _selectedArticle = i;
           }
@@ -101,6 +127,7 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
   WikiHelper wikiHelper = WikiHelper("test.csv");
   final Graph graph = Graph();
   Algorithm? builder;
+  String _articleSearch = "";
 
   @override
   void initState() {
