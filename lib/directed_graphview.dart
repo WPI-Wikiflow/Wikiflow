@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:graphview/GraphView.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 
 import 'wiki.dart';
 
@@ -43,6 +42,21 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
                     _articleSearch = "";
                   }
                 });
+                if (kDebugMode) {
+                  print(_articleSearch);
+                }
+              },
+              onSubmitted: (text) {
+                setState(() {
+                  // Update the text
+                  if (text != "") {
+                    _articleSearch = wikiHelper.indexOfFuzzyMatch(text);
+                    WikiNode node = wikiHelper.wikiNodes[_articleSearch] ?? WikiNode();
+                    _articleSearch = node.title;
+                    initGraphWithNode(node);
+                    }
+                  }
+                );
                 if (kDebugMode) {
                   print(_articleSearch);
                 }
@@ -125,9 +139,33 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
   }
 
   WikiHelper wikiHelper = WikiHelper("test.csv");
-  final Graph graph = Graph();
+  Graph graph = Graph();
   Algorithm? builder;
   String _articleSearch = "";
+  Map<String, WikiNode> articleTitlesToNodes = {};
+  // WikiNode _selectedNode = WikiNode();
+
+  void initGraphWithNode(WikiNode rootNode){
+    graph = Graph();
+    final List<Node> nodes = [];
+    final List<Edge> edges = [];
+    nodes.add(Node.Id(rootNode));
+
+    // Get the 3 most similar titles to the random title
+    var mostSimilar = wikiHelper.getIndexOfNMostSimilar(rootNode.vector, 3);
+
+    // Add the most similar titles to the graph
+    for (var i in mostSimilar) {
+      nodes.add(Node.Id(wikiHelper.wikiNodes[i]));
+      articleTitlesToNodes[wikiHelper.wikiNodes[i]?.title ?? ""] = wikiHelper.wikiNodes[i] ?? WikiNode();
+      // edges.add(Edge(nodes[0], nodes[nodes.length - 1]));
+      graph.addEdge(nodes[0], nodes[nodes.length - 1]);
+    }
+    // Set builder
+    builder = FruchtermanReingoldAlgorithm(iterations: 1000);
+    // Update state
+    setState(() {});
+  }
 
   @override
   void initState() {
@@ -142,28 +180,7 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
       }
       WikiNode randomNode = wikiHelper.getRandomNode();
       _selectedArticle = randomNode;
-
-      final List<Node> nodes = [];
-      final List<Edge> edges = [];
-
-      // Get the index of the random title
-      // var randomTitleIndex = wikiHelper.wikiNodes.indexOf(randomTitle);
-
-      nodes.add(Node.Id(randomNode));
-
-      // Get the 3 most similar titles to the random title
-      var mostSimilar = wikiHelper.getIndexOfNMostSimilar(randomNode.vector, 3);
-
-      // Add the most similar titles to the graph
-      for (var i in mostSimilar) {
-        nodes.add(Node.Id(wikiHelper.wikiNodes[i]));
-        // edges.add(Edge(nodes[0], nodes[nodes.length - 1]));
-        graph.addEdge(nodes[0], nodes[nodes.length - 1]);
-      }
-      // Set builder
-      builder = FruchtermanReingoldAlgorithm(iterations: 1000);
-      // Update state
-      setState(() {});
+      initGraphWithNode(randomNode);
     });
   }
 }
