@@ -147,7 +147,19 @@ class WikiHelper {
     }
     List<String> titlesOut = [];
     for (int i = 0; i < n; i++) {
-      int index = similarities.indexOf(similarities.reduce(max));
+      int index = 0;
+      double bestValue = similarities.reduce(max);
+      for (int j = 0; j < similarities.length; j++) {
+        if (similarities[j] == bestValue) {
+          index = j;
+        }
+      }
+
+
+      if (kDebugMode) {
+        print(index);
+        print(similarities.reduce(max));
+      }
       if (index != -1) {
         if (vector == vectors[index]) {
           similarities[index] = -1;
