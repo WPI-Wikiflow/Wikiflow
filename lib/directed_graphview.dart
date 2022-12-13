@@ -171,6 +171,9 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
     for (var node in nodes) {
       graph.removeNode(node);
     }
+    if (kDebugMode) {
+      print("Graph cleared");
+    }
 
     setState(() {
       List<Node> nodes = [];
