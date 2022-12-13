@@ -154,7 +154,7 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
     );
   }
 
-  WikiHelper wikiHelper = WikiHelper("test.csv");
+  WikiHelper wikiHelper = WikiHelper("/Wikiflow/test.csv");
   Graph graph = Graph();
   Algorithm? builder;
   String _articleSearch = "";
