@@ -68413,7 +68413,7 @@ r[3]=r[3]+s[3]}}
 A.tS.prototype={
 ah(){var s=A.a([],t.u),r=t.s,q=t.N,p=t.rZ
 r=new A.a5W(A.a([],t.zg),A.a([],r),A.a([],r),A.a([],r),A.z(q,p),A.a([],t.X6))
-r.f="test.csv"
+r.f="/assets/test.csv"
 return new A.KC(B.fC,new A.jp(s),r,new A.WP(A.a([],t.f2),A.a([],t.zs),A.a([],t.Q1)),A.z(q,p),B.k)}}
 A.KC.prototype={
 L(a){var s,r,q=this,p=null,o=A.ais(p,B.IS,p,p,p,p,p,p,!0,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,"Search for an article",p,p,p,p,!1,p,p,p,q.y,p,B.nr,p,p,p,p,p,p,p,p,p,p,p),n=q.x
