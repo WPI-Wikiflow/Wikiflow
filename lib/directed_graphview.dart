@@ -37,8 +37,7 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
                   // Update the text
                   if (text != "") {
                     _articleSearch = wikiHelper.indexOfFuzzyMatch(text);
-                  }
-                  else {
+                  } else {
                     _articleSearch = "";
                   }
                 });
@@ -47,13 +46,14 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
                 }
               },
               onSubmitted: (text) {
-                  // Update the text
-                  if (text != "") {
-                    _articleSearch = wikiHelper.indexOfFuzzyMatch(text);
-                    WikiNode node = wikiHelper.wikiNodes[_articleSearch] ?? WikiNode();
-                    _articleSearch = node.title;
-                    initGraphWithNode(node);
-                  }
+                // Update the text
+                if (text != "") {
+                  _articleSearch = wikiHelper.indexOfFuzzyMatch(text);
+                  WikiNode node =
+                      wikiHelper.wikiNodes[_articleSearch] ?? WikiNode();
+                  _articleSearch = node.title;
+                  initGraphWithNode(node);
+                }
                 if (kDebugMode) {
                   print(_articleSearch);
                 }
@@ -119,23 +119,26 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
             print('tapped ${i.title}');
             print('tapped ${i.text}');
           }
-            _selectedArticle = i;
-            // Find the nodes that are connected to this node
-            // and add them to the graph
-            final List<Node> nodes = [];
-            final List<Edge> edges = [];
-            nodes.add(Node.Id(i));
-            var mostSimilar = wikiHelper.getIndexOfNMostSimilar(_selectedArticle.vector, 3);
-            if (kDebugMode) {
-              print(mostSimilar);
-            }
-            for (var i in mostSimilar) {
-              articleTitlesToNodes[wikiHelper.wikiNodes[i]?.title ?? ""] = wikiHelper.wikiNodes[i] ?? WikiNode();
-              // edges.add(Edge(nodes[0], nodes[nodes.length - 1]));
-              graph.addEdge(Node.Id(_selectedArticle), Node.Id(wikiHelper.wikiNodes[i]));
-            }
-            // Set builder
-            builder = FruchtermanReingoldAlgorithm(iterations: 1000);
+          _selectedArticle = i;
+          // Find the nodes that are connected to this node
+          // and add them to the graph
+          final List<Node> nodes = [];
+          final List<Edge> edges = [];
+          nodes.add(Node.Id(i));
+          var mostSimilar =
+              wikiHelper.getIndexOfNMostSimilar(_selectedArticle.vector, 3);
+          if (kDebugMode) {
+            print(mostSimilar);
+          }
+          for (var i in mostSimilar) {
+            articleTitlesToNodes[wikiHelper.wikiNodes[i]?.title ?? ""] =
+                wikiHelper.wikiNodes[i] ?? WikiNode();
+            // edges.add(Edge(nodes[0], nodes[nodes.length - 1]));
+            graph.addEdge(
+                Node.Id(_selectedArticle), Node.Id(wikiHelper.wikiNodes[i]));
+          }
+          // Set builder
+          builder = FruchtermanReingoldAlgorithm(iterations: 1000);
         });
       },
       child: Container(
@@ -158,26 +161,20 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
   Map<String, WikiNode> articleTitlesToNodes = {};
   // WikiNode _selectedNode = WikiNode();
 
-  void initGraphWithNode(WikiNode rootNode){
-      // deep copy the graph
-      List<Edge> edges = graph.edges;
-      for (var edge in edges) {
-        graph.removeEdge(edge);
-      }
-      List<Node> nodes = graph.nodes;
-      for (var node in nodes) {
-        graph.removeNode(node);
-      }
+  void initGraphWithNode(WikiNode rootNode) {
+    // deep copy the graph
+    List<Edge> edges = graph.edges;
+    for (var edge in edges) {
+      graph.removeEdge(edge);
+    }
+    List<Node> nodes = graph.nodes;
+    for (var node in nodes) {
+      graph.removeNode(node);
+    }
 
     setState(() {
-      // Remove all nodes and edges from the graph
-
-
-
       List<Node> nodes = [];
-      List<Edge> edges = [];
       nodes.add(Node.Id(rootNode));
-
       // Get the 3 most similar titles to the random title
       var mostSimilar = wikiHelper.getIndexOfNMostSimilar(rootNode.vector, 3);
 
@@ -185,14 +182,12 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
       for (var i in mostSimilar) {
         nodes.add(Node.Id(wikiHelper.wikiNodes[i]));
         articleTitlesToNodes = {};
-        articleTitlesToNodes[wikiHelper.wikiNodes[i]?.title ?? ""] = wikiHelper.wikiNodes[i] ?? WikiNode();
-        // edges.add(Edge(nodes[0], nodes[nodes.length - 1]));
+        articleTitlesToNodes[wikiHelper.wikiNodes[i]?.title ?? ""] =
+            wikiHelper.wikiNodes[i] ?? WikiNode();
         graph.addEdge(nodes[0], nodes[nodes.length - 1]);
       }
       // Set builder
       builder = FruchtermanReingoldAlgorithm(iterations: 1000);
-      // Update state
-
       graph = graph;
       builder = builder;
     });
@@ -201,9 +196,6 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
   @override
   void initState() {
     super.initState();
-
-    // Get random title from wikiHelper
-
     // Wait for wikiHelper to finish loading
     wikiHelper.loadWikiData().then((value) {
       if (kDebugMode) {

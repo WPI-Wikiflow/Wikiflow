@@ -5,7 +5,6 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import 'package:fuzzywuzzy/model/extracted_result.dart';
 
-
 class WikiNode {
   List<double> vector = [];
   String title = "";
@@ -27,7 +26,6 @@ class WikiHelper {
   Map<String, WikiNode> wikiNodes = {};
   String wikiDataCSVPath = "";
   List<List> wikiData = [];
-
 
   WikiHelper(String CSVPath) {
     wikiDataCSVPath = CSVPath;
@@ -104,7 +102,8 @@ class WikiHelper {
     return wikiNodes[titles[randomIndex]] ?? WikiNode();
   }
 
-  Map<String, WikiNode> getWikiNodes(List<List<double>> vectors, List<String> titles, List<String> texts,List<String> ids) {
+  Map<String, WikiNode> getWikiNodes(List<List<double>> vectors,
+      List<String> titles, List<String> texts, List<String> ids) {
     Map<String, WikiNode> wikiNodes = {};
     for (int i = 0; i < vectors.length; i++) {
       WikiNode wikiNode = WikiNode();
@@ -154,7 +153,6 @@ class WikiHelper {
           index = j;
         }
       }
-
 
       if (kDebugMode) {
         print(index);
