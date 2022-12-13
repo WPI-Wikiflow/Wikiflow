@@ -14,6 +14,33 @@ class GraphClusterViewPage extends StatefulWidget {
 }
 
 class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
+
+  @override
+  void initState() {
+    super.initState();
+    // Wait for wikiHelper to finish loading
+    wikiHelper.loadWikiData().then((value) {
+      if (kDebugMode) {
+        print(wikiHelper.titles.length);
+      }
+      WikiNode randomNode = wikiHelper.getRandomNode();
+      _selectedArticle = randomNode;
+
+      initGraphWithNode(randomNode);
+    });
+  }
+
+  Random r = Random();
+  WikiNode _selectedArticle = WikiNode();
+  WikiHelper wikiHelper = WikiHelper("assets/test.csv");
+  Graph graph = Graph();
+  Algorithm? builder;
+  String _articleSearch = "";
+
+  List<Edge> edges = [];
+  List<Node> nodes = [];
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,11 +62,7 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
               onChanged: (text) {
                 setState(() {
                   // Update the text
-                  if (text != "") {
-                    _articleSearch = wikiHelper.indexOfFuzzyMatch(text);
-                  } else {
-                    _articleSearch = "";
-                  }
+                  _articleSearch = wikiHelper.indexOfFuzzyMatch(text);
                 });
                 if (kDebugMode) {
                   print(_articleSearch);
@@ -49,8 +72,7 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
                 // Update the text
                 if (text != "") {
                   _articleSearch = wikiHelper.indexOfFuzzyMatch(text);
-                  WikiNode node = wikiHelper.wikiNodes[_articleSearch] ?? WikiNode();
-                  _articleSearch = node.title;
+                  WikiNode node = wikiHelper.wikiNodes[_articleSearch]!;
                   _selectedArticle = node;
                   initGraphWithNode(node);
                 }
@@ -75,11 +97,7 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
                         ..strokeWidth = 1
                         ..style = PaintingStyle.fill,
                       builder: (Node node) {
-                        // I can decide what widget should be shown here based on the id
-                        WikiNode a = node.key!.value;
-                        // Get the title
-                        String title = a.title;
-                        return rectangWidget(a);
+                        return rectangWidget(node.key!.value);
                       },
                     ),
                   )
@@ -107,10 +125,6 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
     );
   }
 
-  int n = 8;
-  Random r = Random();
-  WikiNode _selectedArticle = WikiNode();
-
   Widget rectangWidget(WikiNode? targetNode) {
     return InkWell(
       onTap: () {
@@ -120,13 +134,13 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
             print('tapped ${targetNode.text}');
           }
           _selectedArticle = targetNode;
-          var mostSimilar = wikiHelper.getIndexOfNMostSimilar(_selectedArticle.vector, 3);
+          List<String> mostSimilar = wikiHelper.getIndexOfNMostSimilar(_selectedArticle.vector, 3);
           if (kDebugMode) {
             print(mostSimilar);
           }
           Node nodeNodeTarget = Node.Id(targetNode);
           nodes.add(nodeNodeTarget);
-          for (var artTmp in mostSimilar) {
+          for (String artTmp in mostSimilar) {
             Node destNode = Node.Id(wikiHelper.wikiNodes[artTmp]);
             nodes.add(destNode);
             Edge edge = Edge(nodeNodeTarget, destNode);
@@ -150,66 +164,36 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
     );
   }
 
-  WikiHelper wikiHelper = WikiHelper("assets/test.csv");
-  Graph graph = Graph();
-  Algorithm? builder;
-  String _articleSearch = "";
-
-  List<Edge> edges = [];
-  List<Node> nodes = [];
-
   void initGraphWithNode(WikiNode rootNode) {
-
-    List<Edge> edges_tmp = graph.edges;
-    if (kDebugMode) {
-      print(edges_tmp);
-    }
+    // Reset the graph
     graph.removeEdges(edges);
-    if (kDebugMode) {
-      print(graph.edges);
-    }
-    List<Node> nodes_tmp = graph.nodes;
     graph.removeNodes(nodes);
-    graph.notifyGraphObserver();
+    // Clear the lists
+    nodes = [];
+    edges = [];
 
+    // Add the root node
+    Node centerNode = Node.Id(rootNode);
+    nodes.add(centerNode);
 
+    // Get the 3 most similar titles to the random title
+    var mostSimilar = wikiHelper.getIndexOfNMostSimilar(rootNode.vector, 3);
 
-      if (kDebugMode) {
-        print("Graph cleared");
-      }
-      // graph.notifyGraphObserver();
-      nodes = [Node.Id(rootNode)];
-      // Get the 3 most similar titles to the random title
-      var mostSimilar = wikiHelper.getIndexOfNMostSimilar(rootNode.vector, 3);
-
-      // Add the most similar titles to the graph
-      for (var i in mostSimilar) {
-        Node node_tmp = Node.Id(wikiHelper.wikiNodes[i]);
-        nodes.add(node_tmp);
-        edges.add(Edge(nodes[0], nodes[nodes.length - 1]));
-        // articleTitlesToNodes = {};
-        // articleTitlesToNodes[wikiHelper.wikiNodes[i]?.title ?? ""] = wikiHelper.wikiNodes[i] ?? WikiNode();
-        graph.addEdgeS(edges[edges.length - 1]);
-      }
-      // Set builder
-      //
+    // Add the most similar titles to the graph
+    for (var i in mostSimilar) {
+      // Build the node
+      Node nodeTmp = Node.Id(wikiHelper.wikiNodes[i]);
+      nodes.add(nodeTmp);
+      // Build the edge
+      Edge edge = Edge(centerNode, nodeTmp);
+      // Add the edge to the graph
+      edges.add(edge);
+      graph.addEdgeS(edge);
+    }
     setState(() {
-      graph = graph;
-      builder = FruchtermanReingoldAlgorithm(iterations: 1000);
-    });
-  }
 
-  @override
-  void initState() {
-    super.initState();
-    // Wait for wikiHelper to finish loading
-    wikiHelper.loadWikiData().then((value) {
-      if (kDebugMode) {
-        print(wikiHelper.titles.length);
-      }
-      WikiNode randomNode = wikiHelper.getRandomNode();
-      _selectedArticle = randomNode;
-      initGraphWithNode(randomNode);
+      // Set builder
+      builder = FruchtermanReingoldAlgorithm(iterations: 1000);
     });
   }
 }
