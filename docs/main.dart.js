@@ -68533,7 +68533,7 @@ while(true)switch(s){case 0:n=A.a([],t.X6)
 s=3
 return A.aj($.Qj().a69(a),$async$tt)
 case 3:m=c.split("\n")
-for(p=m.length,o=0;o<p;++o)n.push(J.ahd(m[o],","))
+for(p=m.length,o=0;o<p;++o)n.push(J.ahd(m[o],"\t"))
 q=n
 s=1
 break

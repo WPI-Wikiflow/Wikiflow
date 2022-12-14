@@ -54,7 +54,7 @@ class WikiHelper {
     String csvString = await rootBundle.loadString(path);
     List<String> csvRows = csvString.split('\n');
     for (String row in csvRows) {
-      List<dynamic> rowData = row.split(',');
+      List<dynamic> rowData = row.split('\t');
       csvData.add(rowData);
     }
     return csvData;
