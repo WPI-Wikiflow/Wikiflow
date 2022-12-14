@@ -31,7 +31,7 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
 
   Random r = Random();
   WikiNode _selectedArticle = WikiNode();
-  WikiHelper wikiHelper = WikiHelper("assets/needDtoVFinalWithVectorsLarge.csv");
+  WikiHelper wikiHelper = WikiHelper("assets/needDtoVFinalWithVectors.csv");
   Graph graph = Graph();
   Algorithm? builder;
   String _articleSearch = "";
@@ -160,7 +160,7 @@ class _GraphClusterViewPageState extends State<GraphClusterViewPage> {
             BoxShadow(color: Colors.blue, spreadRadius: 1),
           ],
         ),
-        child: Text('Node ${targetNode!.title}'),
+        child: Text(targetNode!.title),
       ),
     );
   }
