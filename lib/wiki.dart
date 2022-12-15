@@ -27,8 +27,14 @@ class WikiHelper {
   String wikiDataCSVPath = "";
   List<List> wikiData = [];
 
+  List<List<double>> compareVectors = [];
+  Map<int, List<List<double>>> compareVectorsMap = {};
+  int numCompareVectors = 10;
+
   WikiHelper(String CSVPath) {
     wikiDataCSVPath = CSVPath;
+
+
   }
 
   Future loadWikiData() async {
@@ -40,6 +46,23 @@ class WikiHelper {
     texts = getTexts(wikiData);
     ids = getIds(wikiData);
     wikiNodes = getWikiNodes(vectors, titles, texts, ids);
+
+    // Generate the compare vectors
+    // Each vector is spaced by 1/numCompareVectors
+    for (int i = 0; i < numCompareVectors + 1; i++) {
+      double val = (i / numCompareVectors);
+      if (kDebugMode) {
+        print(val);
+      }
+      List<double> outVector = [];
+      for (int j = 0; j < 300; j++) {
+        outVector.add(val);
+      }
+      compareVectors.add(outVector);
+    }
+
+    getCompareVectorsMap();
+
     if (kDebugMode) {
       print(vectors.sublist(0, 5));
       print(titles.sublist(0, 5));
@@ -130,11 +153,46 @@ class WikiHelper {
     return dotProduct / (normA * normB);
   }
 
+  void getCompareVectorsMap() {
+    // For each vector, get the cosine similarity to each compare vector and put it in the map accordingly
+    for (int i = 0; i < vectors.length; i++) {
+      List<double> vector = vectors[i];
+      int indexOfBestCompareVector = 0;
+      double bestCompareVectorSimilarity = 0;
+      for (int j = 0; j < numCompareVectors + 1; j++) {
+        List<double> compareVector = compareVectors[j];
+        double similarity = getCosineSimilarity(vector, compareVector);
+        if (similarity > bestCompareVectorSimilarity) {
+          bestCompareVectorSimilarity = similarity;
+          indexOfBestCompareVector = j;
+        }
+      }
+      // check if the map already has a list for the index
+      if (compareVectorsMap.containsKey(indexOfBestCompareVector)) {
+        compareVectorsMap[indexOfBestCompareVector] = compareVectorsMap[indexOfBestCompareVector]! + [vector];
+      } else {
+        compareVectorsMap[indexOfBestCompareVector] = [vector];
+      }
+    }
+  }
+
   List<String> getIndexOfNMostSimilar(List<double> vector, int n) {
     List<double> similarities = [];
     if (kDebugMode) {
       print(vectors);
     }
+
+    int indexOfBestCompareVector = 0;
+    double bestCompareVectorSimilarity = 0;
+    for (int j = 0; j < numCompareVectors + 1; j++) {
+      List<double> compareVector = compareVectors[j];
+      double similarity = getCosineSimilarity(vector, compareVector);
+      if (similarity > bestCompareVectorSimilarity) {
+        bestCompareVectorSimilarity = similarity;
+        indexOfBestCompareVector = j;
+      }
+    }
+    
     for (List<double> v in vectors) {
       if (kDebugMode) {
         print(v);
